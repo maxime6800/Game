@@ -1,51 +1,80 @@
 #include "raylib.h"
 #include <iostream>
+#include <vector>
 #include "player.h"
 #include "floor.h"
+#include "collisionsManager.h"
+
+float SPEED = 3.0;
+float MAX_SPEED = 20.0;
+float ACCELERATION = 10.0;
 
 
-int main(){
-    
-    // Initialization
-    const int screenWidth = 800;
-    const int screenHeight = 600;
+int main() {
+    // Initialization of screen 
+    const int screenWidth = 1600;
+    const int screenHeight = 1000;
 
-    Floor floor(0, screenHeight - 50, screenWidth, 50, DARKGRAY); // Der Boden ist 50 Einheiten hoch
-
+    // Initialization window
     InitWindow(screenWidth, screenHeight, "2DGame");
-    Player player{"Mes", RED, 2.0};
     
-    
+    // Init Implementation Objects
+    Floor floor{screenWidth};
+    Player player{"Player", RED, SPEED, MAX_SPEED, ACCELERATION};
+    CollisionsManager collision;
+
+    //init Cam 
     Camera2D camera = {};
-    Vector2 target = player.GetPosition(); // Stellen Sie sicher, dass player bereits initialisiert wurde
+    
+    // Load the tileset texture
+    floor.Load_Texture();
+
+    // Load the tileset texture
+    if (!floor.Load_Texture()) {
+        CloseWindow();
+        return -1;
+    }
+
+    // Cam settings
     camera.target = player.GetPosition();
-    camera.offset = { screenWidth / 2.0f, screenHeight / 2.0f };
+    camera.offset = { (float)screenWidth / 2, (float)screenHeight / 2 };
     camera.rotation = 0.0f;
     camera.zoom = 1.0f;
 
+    // FPS rate 
     SetTargetFPS(60);
     
-    // Main Game Loop 
+
+    // Main Game Loop
     while (!WindowShouldClose()) {
-        // Update 
+        // Update
         player.movePlayer();
         player.Jump();
-        camera.target = player.GetPosition(); // Aktualisieren der Kamera-Zielposition
+        player.stop_vertical_speed();
+        collision.detect_collision(player, floor);
+        camera.target = player.GetPosition(); // Update camera target position
+        floor.UpdatePosition(player.GetPosition().x);
 
-    // Draw
+        // Draw
         BeginDrawing();
         ClearBackground(LIGHTGRAY);
 
         BeginMode2D(camera);
-        player.Draw(); // Zeichnen des Spielers innerhalb des Kamerakontexts
         floor.Draw();
+
+        player.Draw(); // Draw player within the camera context
         EndMode2D();
 
-        // Zeichnen anderer Elemente außerhalb der Kamera hier
+        // Draw other elements outside of the camera here
         EndDrawing();
-}
+    }
 
-    // end Initialization
+    // De-Initialization
     CloseWindow();
 
+    // Clean up resources that Raylib may have allocated
+    CloseAudioDevice(); // Close audio device if you have initialized it
+    //rlglClose();        // Close rlgl if you have used it directly
+
+    return 0;
 }

@@ -1,26 +1,28 @@
 #ifndef PLAYER_H
 #define PLAYER_H
-#include <iostream>
-#include <string>
-#include "raylib.h"
 
-class Player{
+#include "raylib.h"
+#include <string>
+
+class Player {
     std::string name;
-    Color color;
-    float speed;
-    Vector2 v1, v2, v3;
-    bool isJumping;
-    float jumpHeight;
-    float gravity;
-    float verticalSpeed;
+    Color color;        // Color Player
+    float speed;        // Grundgeschwindigkeit
+    float maxSpeed;     // Maximale Geschwindigkeit
+    float acceleration; // Beschleunigung
+    Vector2 v1, v2, v3; // Dreieckspunkte des Spielers
+    bool isJumping;     
+    float verticalSpeed; // Vertikale Geschwindigkeit für Sprünge
 public:
-    Player(std::string, Color, float, Vector2 = {800/2, 100 }, Vector2 = {800/2 - 50, 200 }, Vector2 = {800/2 + 50, 200 });
+    Player(const std::string& name, Color color, float speed, float maxSpeed, float acceleration);
     void Draw();
     void movePlayer();
     void Jump();
-    void UpdateOrientation();
+    void stop_vertical_speed();
     Vector2 GetPosition() const;
-
+    float GetHeight() const;
+    void SetPositionY(float y);
+    float get_x();
 };
 
-#endif //PLAYER
+#endif // PLAYER_H

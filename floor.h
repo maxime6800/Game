@@ -3,13 +3,19 @@
 
 #include "raylib.h"
 
-class Floor{
+class Floor {
 public:
-    Rectangle rect;
-    Color color;
+    Texture2D tileset;
+    Rectangle groundTileSrc;
+    Vector2 position;
+    int screenWidth;
+    float tileHeight;
 
-    Floor(float x, float y, float width, float height, Color color);
-    void Draw() const;
+    Floor(int width);
+    ~Floor();
+    bool Load_Texture();
+    void Draw();
+    void UpdatePosition(float playerX); // Hinzufügen einer Methode zur Aktualisierung der Position
 };
 
-#endif // FLOOR
+#endif // FLOOR_H
